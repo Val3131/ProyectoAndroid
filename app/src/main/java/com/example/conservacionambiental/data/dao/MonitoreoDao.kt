@@ -24,4 +24,7 @@ interface MonitoreoDao {
 
     @Delete
     suspend fun eliminar(monitoreo: Monitoreo)
+
+    @Query("SELECT COUNT(*) FROM monitoreos WHERE areaId = :areaId")
+    suspend fun contarPorArea(areaId: Long): Int
 }

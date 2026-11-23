@@ -12,6 +12,9 @@ import androidx.compose.ui.unit.dp
 import com.example.conservacionambiental.data.DatabaseProvider
 import com.example.conservacionambiental.data.model.Monitoreo
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.ResolverStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +59,7 @@ fun MonitoreosScreen() {
     }
 
     var fecha by remember { mutableStateOf("") }
+    var errorFecha by remember { mutableStateOf(false) }
     var tipo by remember { mutableStateOf("") }
     var resultado by remember { mutableStateOf("") }
     var mostrarSelectorAreas by remember { mutableStateOf(false) }
@@ -81,6 +85,7 @@ fun MonitoreosScreen() {
                     monitoreoEnEdicion = null
                     areaSeleccionadaId = null
                     fecha = ""
+                    errorFecha = false
                     tipo = ""
                     resultado = ""
                     mostrarSelectorAreas = false
@@ -127,6 +132,7 @@ fun MonitoreosScreen() {
                                         monitoreoEnEdicion = monitoreo
                                         areaSeleccionadaId = monitoreo.areaId
                                         fecha = monitoreo.fecha
+                                        errorFecha = false
                                         tipo = monitoreo.tipo
                                         resultado = monitoreo.resultado
                                         mostrarSelectorAreas = false
@@ -216,9 +222,16 @@ fun MonitoreosScreen() {
                 value = fecha,
                 onValueChange = {
                     fecha = it
+                    errorFecha = false
                 },
                 label = {
                     Text("Fecha (AAAA-MM-DD)")
+                },
+                isError = errorFecha,
+                supportingText = {
+                    if (errorFecha) {
+                        Text("Ingresa una fecha válida en formato AAAA-MM-DD")
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -249,11 +262,11 @@ fun MonitoreosScreen() {
             Button(
                 onClick = {
                     val id = areaSeleccionadaId
-
+                    errorFecha = !fechaValida(fecha.trim())
                     if (
                         id != null &&
                         areas.any { it.id == id } &&
-                        fecha.isNotBlank() &&
+                        fechaValida(fecha.trim()) &&
                         tipo.isNotBlank() &&
                         resultado.isNotBlank()
                     ) {
@@ -300,6 +313,7 @@ fun MonitoreosScreen() {
                     monitoreoEnEdicion = null
                     areaSeleccionadaId = null
                     fecha = ""
+                    errorFecha = false
                     tipo = ""
                     resultado = ""
                     mostrarSelectorAreas = false
@@ -350,3 +364,17 @@ fun MonitoreosScreen() {
         )
     }
 }
+
+fun fechaValida(fecha: String): Boolean {
+    return try {
+        val formato = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd")
+            .withResolverStyle(ResolverStyle.STRICT)
+
+        LocalDate.parse(fecha, formato)
+        true
+    } catch (e: Exception) {
+        false
+    }
+}
+
