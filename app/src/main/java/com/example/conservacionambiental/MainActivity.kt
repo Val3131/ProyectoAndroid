@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.example.conservacionambiental.ui.amenazas.AmenazasScreen
 import com.example.conservacionambiental.ui.areas.AreasScreen
 import com.example.conservacionambiental.ui.monitoreos.MonitoreosScreen
 import com.example.conservacionambiental.ui.theme.ConservacionAmbientalTheme
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ConservacionAmbientalTheme {
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -49,6 +51,7 @@ fun PantallaPrincipal() {
 
     Scaffold(
         bottomBar = {
+
             NavigationBar {
 
                 NavigationBarItem(
@@ -76,6 +79,19 @@ fun PantallaPrincipal() {
                         Text("Monitoreos")
                     }
                 )
+
+                NavigationBarItem(
+                    selected = pantallaActual == "amenazas",
+                    onClick = {
+                        pantallaActual = "amenazas"
+                    },
+                    icon = {
+                        Text("T")
+                    },
+                    label = {
+                        Text("Amenazas")
+                    }
+                )
             }
         }
     ) { innerPadding ->
@@ -85,9 +101,14 @@ fun PantallaPrincipal() {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+
             when (pantallaActual) {
+
                 "areas" -> AreasScreen()
+
                 "monitoreos" -> MonitoreosScreen()
+
+                "amenazas" -> AmenazasScreen()
             }
         }
     }
